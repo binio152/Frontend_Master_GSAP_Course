@@ -6,6 +6,7 @@ import { TitleSection } from "./title";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { DrawSVGPlugin, ScrollTrigger } from "gsap/all";
+import { useControls } from "leva";
 
 gsap.registerPlugin(ScrollTrigger);
 gsap.registerPlugin(DrawSVGPlugin);
@@ -23,14 +24,20 @@ export default function Page() {
 function DescriptionSection() {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const { stagger, start, end } = useControls({
+    stagger: { value: 0.1, min: 0, max: 1, step: 0.1 },
+    start: { value: 20, min: 0, max: 100, step: 5 },
+    end: { value: 30, min: 0, max: 100, step: 5 },
+  });
+
   useGSAP(
     () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: "h2",
-          start: "top 20%",
           markers: true,
-          end: "bottom center",
+          start: `top ${start}%`,
+          end: `bottom ${end}%`,
           toggleActions: "play reverse play reverse",
         },
       });
@@ -42,11 +49,13 @@ function DescriptionSection() {
 
       tl.from("path", {
         drawSVG: 0,
-        stagger: 0.01,
+        stagger: stagger,
       });
     },
     {
       scope: containerRef,
+      dependencies: [stagger, start, end],
+      revertOnUpdate: true,
     },
   );
 
