@@ -1,0 +1,19 @@
+.letter {
+  display: inline-block;
+
+  animation: reveal 0.4s cubic-bezier(0, 0.55, 0.45, 1);
+  animation-delay: calc(var(--index) * 0.05s);
+  animation-fill-mode: both;
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(50);
+  }
+}
