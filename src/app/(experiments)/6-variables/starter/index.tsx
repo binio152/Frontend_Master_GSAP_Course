@@ -2,11 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import s from "./styles.module.css";
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { distance } from "@/lib/math";
+import Script from "next/script";
 
 export default function Page() {
-  const [distanceFromCenter, setDistanceFromCenter] = useState(0);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -25,13 +26,18 @@ export default function Page() {
 
         const maxDistance = distance(0, 0, center.x, center.y);
 
-        setDistanceFromCenter(d / maxDistance);
+        if (titleRef.current) {
+          titleRef.current.style.setProperty(
+            "--distance",
+            (d / maxDistance).toString(),
+          );
+        }
       },
       { signal: controller.signal },
     );
 
     return () => controller.abort();
-  }, [distanceFromCenter]);
+  }, []);
 
   return (
     <div
@@ -40,16 +46,17 @@ export default function Page() {
         s.grid,
       )}
     >
+      <Script
+        src="//unpkg.com/react-scan/dist/auto.global.js"
+        crossOrigin="anonymous"
+        strategy="beforeInteractive"
+      />
       <h1
+        ref={titleRef}
         className={cn(
           "uppercase text-[10vh] leading-none relative",
           s["title"],
         )}
-        style={
-          {
-            "--distance": distanceFromCenter,
-          } as CSSProperties
-        }
       >
         Variables
       </h1>
